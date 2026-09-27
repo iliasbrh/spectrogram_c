@@ -2,8 +2,6 @@
 #define BITMAP_H
 
 #include "base.h"
-#include "stdio.h"
-#include "stdlib.h"
 
 typedef struct {
 		u16 file_format;
@@ -31,6 +29,7 @@ typedef struct {
 } bmp_header;
 
 
-void writeBMPfromF32(f32* data, u16 width, u16 height, char* file_name);
+u8* spec_palette(); // written at the bottom
+void writeBMPfromF32(const f32* input_data, u16 width, u16 height, char* file_name);
 
 #endif

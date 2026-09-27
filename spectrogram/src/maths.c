@@ -1,6 +1,6 @@
 #include "maths.h"
 
-void fft(f32* signal, f32* window, float complex* out, u32 n_fft) { // lazy fourier transform implementation, fast fourier transform will come later
+void fft(const f32* signal, const f32* window, float complex* out, u32 n_fft) { // lazy fourier transform implementation, fast fourier transform will come later
 		// signal and window of size n_fft
 		// out of size n_fft/2 + 1
 		f32* scaled_by_window = (f32*)malloc(n_fft*sizeof(f32));
@@ -20,9 +20,12 @@ void fft(f32* signal, f32* window, float complex* out, u32 n_fft) { // lazy four
 		free(scaled_by_window);
 }
 
-void complex_to_db(float complex* input, f32* output, u32 N) { // takes the complex array, takes their square magniture (power), then computes 10*log_base10
+f32* complex_to_db(const float complex* input, u32 N) { // takes the complex array, then computes their square magniture (power), then computes 10*log_base10
+		f32* out = (f32*)malloc(N*sizeof(f32));
 		for (u32 i=0; i<N; i++)
-				output[i] = 20.0f * log10f(cabsf(input[i]) + 1e-5); // epsilon to avoid -inf
+				out[i] = 20.0f * log10f(cabsf(input[i]) + 1e-5); // epsilon to avoid -inf
+		
+		return out;
 }
 
 f32* build_hann_window(u32 N) {
@@ -32,7 +35,7 @@ f32* build_hann_window(u32 N) {
 		return out;
 }
 
-f32* transpose(f32* data, u32 width, u32 height) {
+f32* transpose(const f32* data, u32 width, u32 height) {
 		f32* out = (f32*)malloc(width*height*sizeof(f32));
 		for (u32 row=0; row<height; row++)
 				for (u32 col=0; col<width; col++)

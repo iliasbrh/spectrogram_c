@@ -1,4 +1,2 @@
 - better fft (at least radix)
 - argparse from terminal for optional n_fft, n_bins, hop_length
-- mel spectrogram option
-- turn the image to rgb by applying a grayscale to rgb mapping for db scale

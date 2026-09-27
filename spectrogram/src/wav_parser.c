@@ -22,7 +22,7 @@ wav_header read_header(FILE* wav_file) {
 		return hdr;
 }
 
-i32 size24to32(u8* buffer) {
+i32 size24to32(const u8* buffer) { // helper
 		i32 res = buffer[0] | (buffer[1] << 8) | ((buffer[2] & 0x7f) << 16);
 				
 		if (0x80 & buffer[2])
@@ -31,7 +31,7 @@ i32 size24to32(u8* buffer) {
 		return res;
 } 
 
-wav_t read_wav(FILE* wav_file) {
+wav_t read_wav(FILE* wav_file) { // to optimize later
 		wav_t wav;
 		wav.hdr = read_header(wav_file);
 		printf("Successfully read the header\n");
@@ -47,7 +47,7 @@ wav_t read_wav(FILE* wav_file) {
 		}
 
 		u32 n_samples = (8 * wav.size) / (wav.hdr.bits_per_sample);
-		printf("Number of samples in a given channel : %i\n", (i32)n_samples);
+		printf("Total samples (across all channels) : %i\n", (i32)n_samples);
 		wav.data = (f32**)malloc(wav.hdr.n_channels*sizeof(f32*));
 		for (u32 i=0; i<wav.hdr.n_channels; i++)
 				wav.data[i] = (f32*)malloc(n_samples * sizeof(f32) / wav.hdr.n_channels);
@@ -90,6 +90,7 @@ wav_t read_wav(FILE* wav_file) {
 						}
 				}
 		} else { printf("Wrong audio format : %i\n", (i32)wav.hdr.audio_format);}
+		free(buffer);
 
 		return wav;
 }
@@ -100,7 +101,7 @@ void print_header(wav_header hdr) {
 		printf("File size : %i\n", (i32)hdr.file_size);
 		printf("Wave : %.4s\n", (char*)(&hdr.wave_buffer));
 		printf("Format : %.4s\n", (char*)(&hdr.fmt_buffer));
-		printf("Size of format block buffer : %i\n", (i32)hdr.size_fmt_block_buffer);
+		printf("Size of format block : %i\n", (i32)hdr.size_fmt_block_buffer);
 
 		printf("Audio format : %i\n", (i32)hdr.audio_format);
 		printf("Number of channels : %i\n", (i32)hdr.n_channels);

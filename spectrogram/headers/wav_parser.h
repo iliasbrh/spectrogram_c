@@ -1,10 +1,6 @@
 #ifndef WAV_PARSER_H
 #define WAV_PARSER_H
 
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-
 #include "base.h"
 
 

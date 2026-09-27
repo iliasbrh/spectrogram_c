@@ -34,7 +34,7 @@ i32 size24to32(const u8* buffer) { // helper
 wav_t read_wav(FILE* wav_file) { // to optimize later
 		wav_t wav;
 		wav.hdr = read_header(wav_file);
-		printf("Successfully read the header\n");
+		// printf("Successfully read the header\n");
 		print_header(wav.hdr);
 
 		// skipping chunks that are not data
@@ -97,11 +97,11 @@ wav_t read_wav(FILE* wav_file) { // to optimize later
 
 
 void print_header(wav_header hdr) {
-		printf("Riff : %.4s\n", (char*)(&hdr.riff_buffer));
+		// printf("Riff : %.4s\n", (char*)(&hdr.riff_buffer));
 		printf("File size : %i\n", (i32)hdr.file_size);
-		printf("Wave : %.4s\n", (char*)(&hdr.wave_buffer));
-		printf("Format : %.4s\n", (char*)(&hdr.fmt_buffer));
-		printf("Size of format block : %i\n", (i32)hdr.size_fmt_block_buffer);
+		// printf("Wave : %.4s\n", (char*)(&hdr.wave_buffer));
+		// printf("Format : %.4s\n", (char*)(&hdr.fmt_buffer));
+		// printf("Size of format block : %i\n", (i32)hdr.size_fmt_block_buffer);
 
 		printf("Audio format : %i\n", (i32)hdr.audio_format);
 		printf("Number of channels : %i\n", (i32)hdr.n_channels);

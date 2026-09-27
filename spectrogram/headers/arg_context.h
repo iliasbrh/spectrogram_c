@@ -27,6 +27,8 @@ typedef struct {
 		u32 time_bins;
 		u32 freq_bins;
 
+		f32 max_freq;
+
 		f32* signal;
 } spectrogram_context;
 

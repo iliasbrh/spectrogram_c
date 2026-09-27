@@ -34,6 +34,8 @@ spectrogram_context get_spectrogram_context(wav_t wav, args_t arguments) {
 		res.time_bins = (res.n_samples_per_channel - res.hop_length + 1) / res.hop_length;
 		res.freq_bins = res.n_fft / 2 + 1;
 
+		res.max_freq = wav.hdr.sampling_frequency / 2.0f;
+
 		return res;
 }
 

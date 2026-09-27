@@ -1,6 +1,6 @@
 #include "spectrogram.h"
 
-f32* make_spectrogram(wav_t wav, spectrogram_context spec_ctx, char* output_file_name) {
+f32* make_spectrogram(spectrogram_context spec_ctx, char* output_file_name) {
 		f32* hann_window = build_hann_window(spec_ctx.n_fft);
 
 		float complex* complex_spectrogram = (float complex*)malloc(spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(float complex));
@@ -65,10 +65,10 @@ f32* matmul(f32* A, f32* B, u32 N, u32 M, u32 P) {
 		return out;
 }
 
-f32* make_mel_spec(wav_t wav, mel_spectrogram_context mel_ctx, char* output_file_name) {
-		f32* vanilla_spec = make_spectrogram(wav, mel_ctx.spec_ctx, output_file_name);
+f32* make_mel_spec(mel_spectrogram_context mel_ctx, char* output_file_name) {
+		f32* vanilla_spec = make_spectrogram(mel_ctx.spec_ctx, output_file_name);
 		
-		f32* filter_banks = build_mel_filter_bank(mel_ctx.spec_ctx.freq_bins, wav.hdr.sampling_frequency / 2, mel_ctx.n_mels);
+		f32* filter_banks = build_mel_filter_bank(mel_ctx.spec_ctx.freq_bins, mel_ctx.spec_ctx.max_freq, mel_ctx.n_mels);
 		
 		return matmul(filter_banks, vanilla_spec, mel_ctx.n_mels, mel_ctx.spec_ctx.freq_bins, mel_ctx.spec_ctx.time_bins);
 }

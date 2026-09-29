@@ -1,6 +1,6 @@
 #include "spectrogram.h"
 
-f32* make_spectrogram(spectrogram_context spec_ctx, char* output_file_name) {
+f32* make_spectrogram(spectrogram_context spec_ctx) {
 		f32* hann_window = build_hann_window(spec_ctx.n_fft);
 
 		float complex* complex_spectrogram = (float complex*)malloc(spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(float complex));
@@ -35,7 +35,7 @@ f32* build_mel_filter_bank(u32 n_bins, f32 max_freq, u32 n_mels) {
 				// tmp = max_freq * k/n_bins for a given k that we have to find
 				// k = n_bins * tmp / max_freq
 				// since it might not be an integer we take its floor
-				idx_freq_from_mels[i] = (u32)(n_bins * tmp / max_freq);
+				idx_freq_from_mels[i] = (u32)((f32)n_bins * tmp / max_freq);
 		}
 
 		f32* result = (f32*)malloc(n_mels * n_bins * sizeof(f32));
@@ -54,19 +54,8 @@ f32* build_mel_filter_bank(u32 n_bins, f32 max_freq, u32 n_mels) {
 		return result;
 }
 
-f32* matmul(f32* A, f32* B, u32 N, u32 M, u32 P) {
-		f32* out = (f32*)malloc(N*P*sizeof(f32));
-		memset(out, 0.0f, N*P*sizeof(f32));
-		for (u32 row=0; row<N; row++)
-				for (u32 k=0; k<M; k++)
-						for (u32 col=0; col<P; col++)
-								out[row*P+col] += A[row*M+k] * B[k*P+col];
-
-		return out;
-}
-
-f32* make_mel_spec(mel_spectrogram_context mel_ctx, char* output_file_name) {
-		f32* vanilla_spec = make_spectrogram(mel_ctx.spec_ctx, output_file_name);
+f32* make_mel_spec(mel_spectrogram_context mel_ctx) {
+		f32* vanilla_spec = make_spectrogram(mel_ctx.spec_ctx);
 		
 		f32* filter_banks = build_mel_filter_bank(mel_ctx.spec_ctx.freq_bins, mel_ctx.spec_ctx.max_freq, mel_ctx.n_mels);
 		

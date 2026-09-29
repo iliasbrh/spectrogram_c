@@ -5,19 +5,19 @@ wav_header read_header(FILE* wav_file) {
 		wav_header hdr;
 
 		// reading RIFF, file_size and WAVE
-		b32 error_code = fread(&hdr, 12, 1, wav_file);
+		(void)fread(&hdr, 12, 1, wav_file);
 
 		// skipping chunks that are not format chunk, i.e. metadata
 		hdr.fmt_buffer = 0x00000000;
 		while (hdr.fmt_buffer != 0x20746d66) { // "fmt "
-				error_code = fread(&(hdr.fmt_buffer), 8, 1, wav_file);
+				(void)fread(&(hdr.fmt_buffer), 8, 1, wav_file);
 				if (hdr.fmt_buffer != 0x20746d66)
-						fseek(wav_file, (i64)((hdr.size_fmt_block_buffer+1)&(~1)), SEEK_CUR);
+						fseek(wav_file, (i64)((hdr.size_fmt_block_buffer+1)&(~1u)), SEEK_CUR);
 		}
 
-		error_code = fread(&(hdr.audio_format), 16, 1, wav_file);
+		(void)fread(&(hdr.audio_format), 16, 1, wav_file);
 		if (hdr.size_fmt_block_buffer > 16)
-				fseek(wav_file, (i64)((hdr.size_fmt_block_buffer+1)&(~1)) - 16, SEEK_CUR);
+				fseek(wav_file, (i64)((hdr.size_fmt_block_buffer+1)&(~1u)) - 16, SEEK_CUR);
 
 		return hdr;
 }
@@ -39,11 +39,10 @@ wav_t read_wav(FILE* wav_file) { // to optimize later
 
 		// skipping chunks that are not data
 		wav.data_buffer = 0x00000000;
-		b32 error_code;
 		while (wav.data_buffer != 0x61746164) { // "data"
-				error_code = fread(&(wav.data_buffer), 8, 1, wav_file);
+				(void)fread(&(wav.data_buffer), 8, 1, wav_file);
 				if (wav.data_buffer != 0x61746164)
-						fseek(wav_file, (i64)((wav.size + 1) & (~1)), SEEK_CUR);
+						fseek(wav_file, (i64)((wav.size + 1) & (~1u)), SEEK_CUR);
 		}
 
 		u32 n_samples = (8 * wav.size) / (wav.hdr.bits_per_sample);
@@ -57,7 +56,7 @@ wav_t read_wav(FILE* wav_file) { // to optimize later
 				f32 half_range = 1u << (wav.hdr.bits_per_sample - 1); // treating the 1 as unsigned to avoid undefined behaviour in the case of 1 << 31 (since 1 is i32 by default)
 				for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++) {
 						for (u32 channel=0; channel < wav.hdr.n_channels; channel++) {
-								error_code = fread(buffer, wav.hdr.bits_per_sample / 8, 1, wav_file);
+								(void)fread(buffer, wav.hdr.bits_per_sample / 8, 1, wav_file);
 								switch (wav.hdr.bits_per_sample)
 								{
 										case 8:
@@ -65,7 +64,7 @@ wav_t read_wav(FILE* wav_file) { // to optimize later
 										case 16:
 												wav.data[channel][i] = ((f32)(*(i16*)buffer)) / half_range; break;
 										case 24:
-												wav.data[channel][i] = size24to32(buffer); break;
+												wav.data[channel][i] = (f32)size24to32(buffer); break;
 										case 32:
 												wav.data[channel][i] = ((f32)(*(i32*)buffer)) / half_range; break;
 										default:
@@ -76,7 +75,7 @@ wav_t read_wav(FILE* wav_file) { // to optimize later
 		} else if (wav.hdr.audio_format == 3) {
 				for (u32 i=0; i<n_samples; i++) {
 						for (u32 channel=0; channel < wav.hdr.n_channels; channel++) {
-								error_code = fread(buffer, wav.hdr.bits_per_sample / 8, 1, wav_file);
+								(void)fread(buffer, wav.hdr.bits_per_sample / 8, 1, wav_file);
 								switch(wav.hdr.bits_per_sample)
 								{
 										case 32:

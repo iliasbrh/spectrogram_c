@@ -7,10 +7,10 @@ void writeBMPfromF32(const f32* input_data, u16 width, u16 height, char* file_na
 		bmp_header hdr = {
 				.file_format = 0x4D42, // BM
 
-				.file_size = 54 + 256*4 + padded_width*height, // header, color palette, data
+				.file_size = 54u + 256u*4u + padded_width*height, // header, color palette, data
 				.reserved_zeros = 0x0000,
 
-				.offset_bytes_to_data = 54 + 256*4,
+				.offset_bytes_to_data = 54u + 256u*4u,
 				.bitmapinfo_block_size = 40,
 
 				.pixel_width = (i32)(u32)width,

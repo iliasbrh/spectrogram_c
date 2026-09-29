@@ -1,4 +1,15 @@
-build:
-	gcc spectrogram/src/*.c main.c \
-		-I spectrogram/headers -lm -O3 \
-	   	-o run.exe
+SOURCES = src/*.c \
+		  dependencies/argparse/argparse.c \
+		  main.c
+
+build: $(SOURCES)
+	gcc $(SOURCES) \
+		-I include -I dependencies/argparse \
+		-lm -O3 \
+	   	-o spectrogram
+
+debug: $(SOURCES)
+	gcc $(SOURCES) -g \
+		-pedantic -Wall -Wextra -Werror -Wshadow -Wconversion -fsanitize=undefined \
+		-I include -I dependencies/argparse
+		-o debug.exe

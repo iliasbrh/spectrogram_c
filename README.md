@@ -5,7 +5,7 @@ Computing spectrograms from .wav audio files into .bmp format.
 The project does the following tasks :  
 - parses .wav files to extract audio signals as float arrays  
 - computes Short Time Fourier Tranforms with a Hann window applied and regular hops  
-- write a Bitmap file (.bmp, uncompressed) for the resulting image  
+- writes a Bitmap file (.bmp, uncompressed) for the resulting image  
 
 ## To run it on your own
 

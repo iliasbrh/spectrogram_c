@@ -13,7 +13,7 @@ Add a .wav file in the main directory, then run `make build` and `./spectrogram 
 
 ## Flags and recommended parameters  
 
-`spectrogram --help` provides the following flag details.  
+`./spectrogram --help` provides the following flag details.  
   
 <pre>
 Spectrogram's hyperparameters  

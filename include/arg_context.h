@@ -14,7 +14,7 @@ typedef struct {
 
 		b32 make_mel;
 		u16 n_mels;
-		char* file_name;
+		const char* file_name;
 } args_t;
 
 typedef struct {
@@ -28,7 +28,7 @@ typedef struct {
 		u16 time_bins;
 		u16 freq_bins;
 
-		f32 max_freq;
+		f32 max_freq; // the frequency of the highest bin
 
 		f32* signal;
 } spectrogram_context;

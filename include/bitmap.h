@@ -29,7 +29,7 @@ typedef struct {
 } bmp_header;
 
 
-u8* spec_palette(); // written at the bottom
+u8* spec_palette(); // written at the bottom for the bitmap.c
 void writeBMPfromF32(const f32* input_data, u16 width, u16 height, char* file_name);
 
 #endif

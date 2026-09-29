@@ -1,8 +1,8 @@
 #include "arg_context.h"
 
 static const char* const usages[] = {
-		"spectrogram [options] [[--] args]",
-		"spectrogram [options]",
+		"spectrogram file.wav [[--] args]",
+		"spectrogram file.wav",
 		NULL,
 };
 
@@ -10,24 +10,23 @@ args_t parse_args(i32 argc, const char** argv) {
 		args_t res = {
 				.channel = 0,
 
-				.n_fft = 2048,
+				.n_fft = 512,
 				.hop_length = 0,
 
-				.make_mel = true,
-				.n_mels = 128,
+				.make_mel = false,
+				.n_mels = 32,
 				.file_name = NULL
 		};
 
 		struct argparse_option options[] = {
 				OPT_HELP(),
 				OPT_GROUP("Spectrogram's hyperparameters"),
-				OPT_INTEGER('n', "n_fft", &res.n_fft, "length of sliding Short Time Fourier Transform window, default 2048", NULL, 0, 0),
+				OPT_INTEGER('n', "n_fft", &res.n_fft, "length of sliding Short Time Fourier Transform window, default 512", NULL, 0, 0),
 				OPT_INTEGER('h', "hop_length", &res.hop_length, "length of hops between each Short Time Fourier Transform computations, default n_fft/2", NULL, 0, 0),
 				OPT_INTEGER('c', "channel", &res.channel, "audio channel to compute the spectrogram on, default 0", NULL, 0, 0),
 				OPT_GROUP("Mel spectrogram's hyperparameters"),
-				OPT_BOOLEAN('\0', "mel", &res.make_mel, "output a mel spectrogram instead of a vanilla spectrogram, default true", NULL, 0, 0),
-				OPT_INTEGER('m', "n_mels", &res.n_mels, "mel bins for mel spectrograms, default 128", NULL, 0, 0),
-				OPT_STRING(0, "name", &res.file_name, "name of the .wav file to compute the spectrogram from", NULL, 0, 0),
+				OPT_BOOLEAN('\0', "mel", &res.make_mel, "output a mel spectrogram instead of a vanilla spectrogram, default false", NULL, 0, 0),
+				OPT_INTEGER('m', "n_mels", &res.n_mels, "mel bins for mel spectrograms, default 32", NULL, 0, 0),
 				OPT_END(),
 		};
 
@@ -38,7 +37,10 @@ args_t parse_args(i32 argc, const char** argv) {
 		argc = argparse_parse(&argparse, argc, argv);
 
 		if (res.file_name == NULL)
-				fprintf(stderr, "Error : no file name specified.\n");
+				if (argc > 0)
+						res.file_name = argv[0];
+				else
+						fprintf(stderr, "Error : no file name specified.\n");
 
 		return res;
 }
@@ -51,10 +53,7 @@ spectrogram_context get_spectrogram_context(wav_t wav, args_t arguments) {
 				.n_fft = arguments.n_fft,
 		};
 		
-		if (arguments.hop_length == 0)
-				res.hop_length = res.n_fft / 2;
-		else
-				res.hop_length = arguments.hop_length;
+		res.hop_length = (arguments.hop_length == 0) ? res.n_fft / 2 : arguments.hop_length;
 
 		u32 silence_padding = 0; // some audio files (like the ones from Windows sound recorder) have silence at the beginning
 		while (wav.data[res.channel][silence_padding++] == 0.0f) {}

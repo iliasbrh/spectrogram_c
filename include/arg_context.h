@@ -43,7 +43,7 @@ typedef struct {
 args_t parse_args(i32 argc, const char** argv);
 spectrogram_context get_spectrogram_context(wav_t wav, args_t arguments);
 mel_spectrogram_context get_mel_spectrogram_context(wav_t wav, args_t arguments);
-void print_mel_ctx(mel_spectrogram_context mel_ctx);
+void print_mel_ctx(mel_spectrogram_context* mel_ctx);
 
 
 #endif

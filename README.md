@@ -20,6 +20,7 @@ Spectrogram's hyperparameters
     -n, --n_fft=int         length of the sliding Short Time Fourier Transform window, default 512  
     -h, --hop_length=int    length of the hops between each Short Time Fourier Transform computations, default n_fft/2  
     -c, --channel=int       index of the audio channel to compute the spectrogram on, default 0  
+    -o, --output=str        output file name, default spectrogram.bmp
   
 Mel spectrogram's hyperparameters  
     --mel                   output a mel spectrogram instead of a vanilla spectrogram, default false  

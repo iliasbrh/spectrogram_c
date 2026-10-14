@@ -15,12 +15,14 @@ args_t parse_args(i32 argc, const char** argv) {
 
 				.make_mel = false,
 				.n_mels = 32,
-				.file_name = NULL
+				.file_name = NULL,
+				.output_file_name = "spectrogram.bmp"
 		};
 
 		struct argparse_option options[] = {
 				OPT_HELP(),
 				OPT_GROUP("Spectrogram's hyperparameters"),
+				OPT_STRING('o', "output", &res.output_file_name, "output file name, default spectrogram.bmp", NULL, 0, 0),
 				OPT_INTEGER('n', "n_fft", &res.n_fft, "length of sliding Short Time Fourier Transform window, default 512", NULL, 0, 0),
 				OPT_INTEGER('h', "hop_length", &res.hop_length, "length of hops between each Short Time Fourier Transform computations, default n_fft/2", NULL, 0, 0),
 				OPT_INTEGER('c', "channel", &res.channel, "audio channel to compute the spectrogram on, default 0", NULL, 0, 0),
@@ -60,7 +62,7 @@ spectrogram_context get_spectrogram_context(wav_t wav, args_t arguments) {
 		res.signal = wav.data[res.channel] + silence_padding - 1;
 		res.n_samples_per_channel -= silence_padding - 1;
 
-		res.time_bins = (u16)((res.n_samples_per_channel - res.hop_length + 1) / res.hop_length);
+		res.time_bins = (u16)((res.n_samples_per_channel - res.n_fft - 1) / res.hop_length); // wrong, to change
 		res.freq_bins = res.n_fft / 2 + 1;
 
 		res.max_freq = (f32)wav.hdr.sampling_frequency / 2.0f;

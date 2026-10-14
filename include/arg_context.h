@@ -15,6 +15,7 @@ typedef struct {
 		b32 make_mel;
 		u16 n_mels;
 		const char* file_name;
+		const char* output_file_name;
 } args_t;
 
 typedef struct {

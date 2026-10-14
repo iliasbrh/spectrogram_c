@@ -31,7 +31,7 @@ For vanilla spectrograms I recommend `n_fft=512`, while for mel spectrograms mor
 ## Examples  
 
 Vanilla spectrogram :  
-<img src="images/spectrogram.bmp" alt="Vanilla specrogram" style="width: 700px;">
+<img src="images/spectrogram.bmp" alt="Vanilla spectrogram" style="width: 700px;">
 
 Mel spectrogram :  
-<img src="images/mel_spectrogram.bmp" alt="Mel specrogram" style="width: 700px;">
+<img src="images/mel_spectrogram.bmp" alt="Mel spectrogram" style="width: 700px;">

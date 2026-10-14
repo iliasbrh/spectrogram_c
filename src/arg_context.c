@@ -62,7 +62,7 @@ spectrogram_context get_spectrogram_context(wav_t wav, args_t arguments) {
 		res.signal = wav.data[res.channel] + silence_padding - 1;
 		res.n_samples_per_channel -= silence_padding - 1;
 
-		res.time_bins = (u16)((res.n_samples_per_channel - res.n_fft - 1) / res.hop_length); // wrong, to change
+		res.time_bins = (u16)((res.n_samples_per_channel - res.n_fft - 1) / res.hop_length);
 		res.freq_bins = res.n_fft / 2 + 1;
 
 		res.max_freq = (f32)wav.hdr.sampling_frequency / 2.0f;

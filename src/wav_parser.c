@@ -31,10 +31,9 @@ i32 size24to32(const u8* buffer) { // helper
 		return res;
 } 
 
-wav_t read_wav(FILE* wav_file) { // to optimize later
+wav_t read_wav(FILE* wav_file) {
 		wav_t wav;
 		wav.hdr = read_header(wav_file);
-		// printf("Successfully read the header\n");
 		print_header(wav.hdr);
 
 		// skipping chunks that are not data
@@ -51,44 +50,69 @@ wav_t read_wav(FILE* wav_file) { // to optimize later
 		for (u32 i=0; i<wav.hdr.n_channels; i++)
 				wav.data[i] = (f32*)malloc(n_samples * sizeof(f32) / wav.hdr.n_channels);
 
-		u8* buffer = (u8*)malloc(8); // max size is f64 so 8bytes
+
+		u8* buffer = (u8*)malloc(n_samples * wav.hdr.bits_per_sample / 8);
+		(void)!fread(buffer, n_samples * wav.hdr.bits_per_sample / 8, 1, wav_file);
 		if (wav.hdr.audio_format == 1) {
-				f32 half_range = 1u << (wav.hdr.bits_per_sample - 1); // treating the 1 as unsigned to avoid undefined behaviour in the case of 1 << 31 (since 1 is i32 by default)
-				for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++) {
-						for (u32 channel=0; channel < wav.hdr.n_channels; channel++) {
-								(void)!fread(buffer, wav.hdr.bits_per_sample / 8, 1, wav_file);
-								switch (wav.hdr.bits_per_sample)
-								{
-										case 8:
-												wav.data[channel][i] = ((f32)(*(i8*)buffer)) / half_range; break;
-										case 16:
-												wav.data[channel][i] = ((f32)(*(i16*)buffer)) / half_range; break;
-										case 24:
-												wav.data[channel][i] = (f32)size24to32(buffer); break;
-										case 32:
-												wav.data[channel][i] = ((f32)(*(i32*)buffer)) / half_range; break;
-										default:
-												break;
-								}
-						}
+				f32 half_range = 1u << (wav.hdr.bits_per_sample - 1);
+				u32 idx = 0;
+				switch (wav.hdr.bits_per_sample) 
+				{
+						// duplicated code but it avoids the switch case nested into the for loops
+						case 8:
+								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
+										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
+												wav.data[channel][i] = ((f32)(*(i8*)(buffer+idx) - half_range)) / half_range;
+												idx += 1;
+										}
+								break;
+						case 16:
+								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
+										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
+												wav.data[channel][i] = ((f32)(*(i16*)(buffer+idx))) / half_range;
+												idx += 2;
+										}
+								break;
+						case 24:
+								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
+										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
+												wav.data[channel][i] = (f32)size24to32(buffer+idx);
+												idx += 3;
+										}
+								break;
+						case 32:
+								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
+										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
+												wav.data[channel][i] = ((f32)(*(i32*)(buffer+idx))) / half_range;
+												idx += 4;
+										}
+								break;
+						default:
+								break;
 				}
 		} else if (wav.hdr.audio_format == 3) {
-				for (u32 i=0; i<n_samples; i++) {
-						for (u32 channel=0; channel < wav.hdr.n_channels; channel++) {
-								(void)!fread(buffer, wav.hdr.bits_per_sample / 8, 1, wav_file);
-								switch(wav.hdr.bits_per_sample)
-								{
-										case 32:
-												memcpy(&wav.data[channel][i], buffer, sizeof(f32)); break;
-										case 64:
-												f64 tmp;
-												memcpy(&tmp, buffer, sizeof(f64));
-												wav.data[channel][i] = (f32)tmp; // loss of precision in downcast but don't care
-												break;
-								}
-						}
+				u32 idx = 0;
+				switch(wav.hdr.bits_per_sample) 
+				{
+						case 32:
+								for (u32 i=0; i<n_samples; i++)
+										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
+												wav.data[channel][i] = *(f32*)(buffer+idx);
+												idx += 4;
+										}
+								break;
+						case 64:
+								for (u32 i=0; i<n_samples; i++)
+										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
+												wav.data[channel][i] = (f32)*(f64*)(buffer+idx);
+												idx += 8;
+										}
+								break;
+						default:
+								break;
 				}
 		} else { printf("Wrong audio format : %i\n", (i32)wav.hdr.audio_format);}
+
 		free(buffer);
 
 		return wav;

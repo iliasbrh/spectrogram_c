@@ -9,6 +9,25 @@ f32* complex_to_db(const float complex* input, u32 N) { // takes the complex arr
 		return out;
 }
 
+// complex to db has to be splitted in two parts (to get the energy) for mel spectrograms
+f32* complex_to_energy(const float complex* input, u32 N) {
+		f32* out = (f32*)malloc(N*sizeof(f32));
+		f32 tmp;
+		for (u32 i=0; i<N; i++) {
+				tmp = cabsf(input[i]);
+				out[i] = tmp*tmp; 
+		}
+		
+		return out;
+}
+f32* energy_to_db(const float* input, u32 N) {
+		f32* out = (f32*)malloc(N*sizeof(f32));
+		for (u32 i=0; i<N; i++)
+				out[i] = 10.0f * log10f(input[i] + 1e-5f); // epsilon to avoid -inf
+
+		return out;
+}
+
 f32* build_hann_window(u32 N) {
 		f32* out = (f32*)malloc(N * sizeof(f32));
 		for (u32 i=0; i<N; i++)

@@ -48,14 +48,14 @@ f32* build_mel_filter_bank(u32 n_bins, f32 max_freq, u32 n_mels) {
 				u32 start = idx_freq_from_mels[i-1];
 				u32 end = idx_freq_from_mels[i+1];
 				
-				u32 half_step = (end - start + 1) / 2;
+				u32 half_step = (end - start) / 2;
 				f32 div = 1.0f/(f32)(half_step*half_step);
 				f32 max = 1.0f/(f32)half_step;
 
 				for (u32 j=0; j<half_step; j++)
-						result[i*n_bins+start+j] = (j+1)*div;
+						result[(i-1)*n_bins+start+j] = (j+1)*div;
 				for (u32 j=0; j<half_step; j++)
-						result[i*n_bins+start+half_step+j] = max - (j+1)*div;
+						result[(i-1)*n_bins+start+half_step+j] = max - (j+1)*div;
 		}
 
 		free(idx_freq_from_mels);

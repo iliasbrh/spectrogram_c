@@ -10,11 +10,11 @@ args_t parse_args(i32 argc, const char** argv) {
 		args_t res = {
 				.channel = 0,
 
-				.n_fft = 512,
+				.n_fft = 0,
 				.hop_length = 0,
 
 				.make_mel = false,
-				.n_mels = 32,
+				.n_mels = 128,
 				.file_name = NULL,
 				.output_file_name = "spectrogram.bmp"
 		};
@@ -43,6 +43,13 @@ args_t parse_args(i32 argc, const char** argv) {
 						res.file_name = argv[0];
 				else
 						fprintf(stderr, "Error : no file name specified.\n");
+
+		if (res.n_fft == 0) {
+				if (res.make_mel)
+						res.n_fft = 2048;
+				else
+						res.n_fft = 512;
+		}
 
 		return res;
 }

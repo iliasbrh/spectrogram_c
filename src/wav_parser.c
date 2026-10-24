@@ -95,14 +95,14 @@ wav_t read_wav(FILE* wav_file) {
 				switch(wav.hdr.bits_per_sample) 
 				{
 						case 32:
-								for (u32 i=0; i<n_samples; i++)
+								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
 												wav.data[channel][i] = *(f32*)(buffer+idx);
 												idx += 4;
 										}
 								break;
 						case 64:
-								for (u32 i=0; i<n_samples; i++)
+								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
 												wav.data[channel][i] = (f32)*(f64*)(buffer+idx);
 												idx += 8;

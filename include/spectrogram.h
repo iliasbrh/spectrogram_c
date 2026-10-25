@@ -6,6 +6,7 @@
 #include "wav_parser.h"
 #include "maths.h"
 #include "arg_context.h"
+#include "dft.h"
 
 float complex* make_complex_spectrogram(spectrogram_context spec_ctx);
 f32* make_spectrogram(spectrogram_context spec_ctx);

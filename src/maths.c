@@ -55,22 +55,3 @@ f32* matmul(const f32* A, const f32* B, u32 N, u32 M, u32 P) {
 		return out;
 }
 
-void fft(const f32* signal, const f32* window, float complex* out, u32 n_fft) { // lazy fourier transform implementation, fast fourier transform will come later
-		// signal and window of size n_fft
-		// out of size n_fft/2 + 1
-		f32* scaled_by_window = (f32*)malloc(n_fft*sizeof(f32));
-		for (u32 i=0; i<n_fft; i++)
-				scaled_by_window[i] = signal[i] * window[i];
-
-		memset(out, 0, (n_fft/2 + 1) * sizeof(float complex));
-		for (u32 i=0; i<n_fft/2 + 1; i++) {
-				float complex expo = 1.0f;
-				float complex factor = cexpf(-2.0f * I * PI * (f32)i / (f32)n_fft);
-				for (u32 j=0; j<n_fft; j++) {
-						out[i] += expo * scaled_by_window[j];
-						expo *= factor;
-				}
-		}
-
-		free(scaled_by_window);
-}

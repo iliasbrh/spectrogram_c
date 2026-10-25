@@ -1,16 +1,7 @@
 #include "spectrogram.h"
 
 float complex* make_complex_spectrogram(spectrogram_context spec_ctx) {
-		f32* hann_window = build_hann_window(spec_ctx.n_fft);
-
-		float complex* complex_spectrogram = (float complex*)malloc(spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(float complex));
-		for (u32 t=0; t<spec_ctx.time_bins; t++)
-				fft(spec_ctx.signal + spec_ctx.hop_length * t, 
-				    hann_window, 
-					complex_spectrogram + (t * spec_ctx.freq_bins), 
-					spec_ctx.n_fft);
-
-		free(hann_window);
+		float complex* complex_spectrogram = spec_radix2(spec_ctx);
 
 		return complex_spectrogram;
 }

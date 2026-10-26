@@ -1,1 +1,2 @@
-- better fft (at least radix)
+- allow input resampling at a frequency given in input flags
+- compare multiple fft algorithms, plot their time performance with python for various input sizes

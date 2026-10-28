@@ -29,7 +29,7 @@ typedef struct {
 		u32 data_buffer;
 		u32 size; // size of data in bytes
 
-		f32** data; // pointers to data of each channel 
+		f64** data; // pointers to data of each channel 
 } wav_t;
 
 wav_header read_header(FILE* wav_file);

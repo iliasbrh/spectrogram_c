@@ -8,10 +8,10 @@
 #include "arg_context.h"
 #include "dft.h"
 
-float complex* make_complex_spectrogram(spectrogram_context spec_ctx);
-f32* make_spectrogram(spectrogram_context spec_ctx);
-f32* build_mel_filter_bank(u32 n_bins, f32 max_freq, u32 n_mels);
-f32* make_mel_spec(mel_spectrogram_context mel_ctx);
+c64* make_complex_spectrogram(spectrogram_context spec_ctx);
+f64* make_spectrogram(spectrogram_context spec_ctx);
+f64* build_mel_filter_bank(u32 n_bins, f64 max_freq, u32 n_mels);
+f64* make_mel_spec(mel_spectrogram_context mel_ctx);
 
 
 #endif

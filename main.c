@@ -6,7 +6,7 @@ int main(i32 argc, const char** argv) {
 
 		FILE* wav_file = fopen(arguments.file_name, "rb");
 		wav_t wav = read_wav(wav_file);
-		f32* spec;
+		f64* spec;
 		
 		if (arguments.make_mel) {
 				mel_spectrogram_context mel_ctx = get_mel_spectrogram_context(wav, arguments);

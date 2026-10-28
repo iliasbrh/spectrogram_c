@@ -65,14 +65,14 @@ spectrogram_context get_spectrogram_context(wav_t wav, args_t arguments) {
 		res.hop_length = (arguments.hop_length == 0) ? res.n_fft / 2 : arguments.hop_length;
 
 		u32 silence_padding = 0; // some audio files (like the ones from Windows sound recorder) have silence at the beginning
-		while (wav.data[res.channel][silence_padding++] == 0.0f) {}
+		while (wav.data[res.channel][silence_padding++] == 0.) {}
 		res.signal = wav.data[res.channel] + silence_padding - 1;
 		res.n_samples_per_channel -= silence_padding - 1;
 
 		res.time_bins = (u16)((res.n_samples_per_channel - res.n_fft - 1) / res.hop_length);
 		res.freq_bins = res.n_fft / 2 + 1;
 
-		res.max_freq = (f32)wav.hdr.sampling_frequency / 2.0f;
+		res.max_freq = (f64)wav.hdr.sampling_frequency / 2.;
 
 		return res;
 }

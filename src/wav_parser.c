@@ -46,15 +46,15 @@ wav_t read_wav(FILE* wav_file) {
 
 		u32 n_samples = (8 * wav.size) / (wav.hdr.bits_per_sample);
 	 	// printf("Total samples (across all channels) : %i\n", (i32)n_samples);
-		wav.data = (f32**)malloc(wav.hdr.n_channels*sizeof(f32*));
+		wav.data = (f64**)malloc(wav.hdr.n_channels*sizeof(f64*));
 		for (u32 i=0; i<wav.hdr.n_channels; i++)
-				wav.data[i] = (f32*)malloc(n_samples * sizeof(f32) / wav.hdr.n_channels);
+				wav.data[i] = (f64*)malloc(n_samples * sizeof(f64) / wav.hdr.n_channels);
 
 
 		u8* buffer = (u8*)malloc(n_samples * wav.hdr.bits_per_sample / 8);
 		(void)!fread(buffer, n_samples * wav.hdr.bits_per_sample / 8, 1, wav_file);
 		if (wav.hdr.audio_format == 1) {
-				f32 half_range = 1u << (wav.hdr.bits_per_sample - 1);
+				f64 half_range = 1u << (wav.hdr.bits_per_sample - 1);
 				u32 idx = 0;
 				switch (wav.hdr.bits_per_sample) 
 				{
@@ -62,28 +62,28 @@ wav_t read_wav(FILE* wav_file) {
 						case 8:
 								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
-												wav.data[channel][i] = ((f32)(*(i8*)(buffer+idx) - half_range)) / half_range;
+												wav.data[channel][i] = ((f64)(*(i8*)(buffer+idx) - half_range)) / half_range;
 												idx += 1;
 										}
 								break;
 						case 16:
 								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
-												wav.data[channel][i] = ((f32)(*(i16*)(buffer+idx))) / half_range;
+												wav.data[channel][i] = ((f64)(*(i16*)(buffer+idx))) / half_range;
 												idx += 2;
 										}
 								break;
 						case 24:
 								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
-												wav.data[channel][i] = (f32)size24to32(buffer+idx);
+												wav.data[channel][i] = (f64)size24to32(buffer+idx);
 												idx += 3;
 										}
 								break;
 						case 32:
 								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
-												wav.data[channel][i] = ((f32)(*(i32*)(buffer+idx))) / half_range;
+												wav.data[channel][i] = ((f64)(*(i32*)(buffer+idx))) / half_range;
 												idx += 4;
 										}
 								break;
@@ -97,14 +97,14 @@ wav_t read_wav(FILE* wav_file) {
 						case 32:
 								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
-												wav.data[channel][i] = *(f32*)(buffer+idx);
+												wav.data[channel][i] = *(f64*)(buffer+idx);
 												idx += 4;
 										}
 								break;
 						case 64:
 								for (u32 i=0; i<n_samples / wav.hdr.n_channels; i++)
 										for (u32 channel=0; channel<wav.hdr.n_channels; channel++) {
-												wav.data[channel][i] = (f32)*(f64*)(buffer+idx);
+												wav.data[channel][i] = *(f64*)(buffer+idx);
 												idx += 8;
 										}
 								break;

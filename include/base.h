@@ -7,6 +7,9 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+#include <complex.h>
+#include "math.h"
+
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -22,6 +25,9 @@ typedef double f64;
 
 typedef uint8_t b8;
 typedef uint32_t b32;
+
+typedef float complex c32;
+typedef double complex c64;
 
 #define MIN(a, b) ((a) < (b) ? a : b)
 #define MAX(a, b) ((a) < (b) ? b : a)

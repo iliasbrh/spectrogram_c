@@ -1,17 +1,17 @@
 #include "spectrogram.h"
 
-float complex* make_complex_spectrogram(spectrogram_context spec_ctx) {
-		float complex* complex_spectrogram = spec_radix2(spec_ctx);
+c64* make_complex_spectrogram(spectrogram_context spec_ctx) {
+		c64* complex_spectrogram = spec_radix2(spec_ctx);
 
 		return complex_spectrogram;
 }
 
-f32* make_spectrogram(spectrogram_context spec_ctx) {
-		float complex* complex_spectrogram = make_complex_spectrogram(spec_ctx);
+f64* make_spectrogram(spectrogram_context spec_ctx) {
+		c64* complex_spectrogram = make_complex_spectrogram(spec_ctx);
 
-		f32* db_spectrogram = complex_to_db(complex_spectrogram, 
+		f64* db_spectrogram = complex_to_db(complex_spectrogram, 
 										    spec_ctx.time_bins*spec_ctx.freq_bins);
-		f32* transposed_img = transpose(db_spectrogram, 
+		f64* transposed_img = transpose(db_spectrogram, 
 										spec_ctx.freq_bins, spec_ctx.time_bins);
 		
 		free(complex_spectrogram);
@@ -20,28 +20,27 @@ f32* make_spectrogram(spectrogram_context spec_ctx) {
 		return transposed_img;
 }
 
-f32* build_mel_filter_bank(u32 n_bins, f32 max_freq, u32 n_mels) {
-		f32 max_mel = 2595.0f * log10f(1.0f + max_freq / 700.0f);
-		f32 min_mel = 2595.0f * log10f(1.0f + 20.0f / 700.0f);
-		// the mel_bins are equally spaced from min_mel to max_mel, where min_mel if for 20Hz and max_mel is max_freq in mels
+f64* build_mel_filter_bank(u32 n_bins, f64 max_freq, u32 n_mels) {
+		f64 max_mel = 2595. * log10(1. + max_freq / 700.);
+		f64 min_mel = 2595. * log10(1. + 20. / 700.);
+		// the mel_bins are equally spaced from min_mel to max_mel, where min_mel is for 20Hz and max_mel is max_freq in mels
 		
 		// storing the indexes of the frequency bins with back conversion from linear mel scale
 		u32* idx_freq_from_mels = (u32*)malloc((n_mels+2) * sizeof(u32));
-		f32 tmp;
 		for (u32 i=0; i<n_mels+2; i++) {
-				tmp = 700.0f * (expf((min_mel + (f32)i / (f32)(n_mels+1) * (max_mel - min_mel)) / 1127.0f) - 1.0f);
-				idx_freq_from_mels[i] = (u32)((f32)n_bins * tmp / max_freq);
+				f64 tmp = 700. * (exp((min_mel + (f64)i / (f64)(n_mels+1) * (max_mel - min_mel)) / 1127.) - 1.);
+				idx_freq_from_mels[i] = (u32)((f64)n_bins * tmp / max_freq);
 		}
 
-		f32* result = (f32*)malloc(n_mels * n_bins * sizeof(f32));
-		memset(result, 0.0f, n_mels*n_bins*sizeof(f32));
+		f64* result = (f64*)malloc(n_mels * n_bins * sizeof(f64));
+		memset(result, 0, n_mels*n_bins*sizeof(f64));
 		for (u32 i=1; i<n_mels+1; i++) {
 				u32 start = idx_freq_from_mels[i-1];
 				u32 end = idx_freq_from_mels[i+1];
 				
 				u32 half_step = (end - start) / 2;
-				f32 div = 1.0f/(f32)(half_step*half_step);
-				f32 max = 1.0f/(f32)half_step;
+				f64 div = 1./(f64)(half_step*half_step);
+				f64 max = 1./(f64)half_step;
 
 				for (u32 j=0; j<half_step; j++)
 						result[(i-1)*n_bins+start+j] = (j+1)*div;
@@ -54,18 +53,18 @@ f32* build_mel_filter_bank(u32 n_bins, f32 max_freq, u32 n_mels) {
 		return result;
 }
 
-f32* make_mel_spec(mel_spectrogram_context mel_ctx) {
-		float complex* complex_spectrogram = make_complex_spectrogram(mel_ctx.spec_ctx);
-		f32* energy_spec = complex_to_energy(complex_spectrogram, 
+f64* make_mel_spec(mel_spectrogram_context mel_ctx) {
+		c64* complex_spectrogram = make_complex_spectrogram(mel_ctx.spec_ctx);
+		f64* energy_spec = complex_to_energy(complex_spectrogram, 
 										    mel_ctx.spec_ctx.time_bins*mel_ctx.spec_ctx.freq_bins);
-		f32* transposed_img = transpose(energy_spec, 
+		f64* transposed_img = transpose(energy_spec, 
 										mel_ctx.spec_ctx.freq_bins, mel_ctx.spec_ctx.time_bins);
 
-		f32* filter_banks = build_mel_filter_bank(mel_ctx.spec_ctx.freq_bins, mel_ctx.spec_ctx.max_freq, mel_ctx.n_mels);
+		f64* filter_banks = build_mel_filter_bank(mel_ctx.spec_ctx.freq_bins, mel_ctx.spec_ctx.max_freq, mel_ctx.n_mels);
 
-		f32* mel_energies = matmul(filter_banks, transposed_img, 
+		f64* mel_energies = matmul(filter_banks, transposed_img, 
 								   mel_ctx.n_mels, mel_ctx.spec_ctx.freq_bins, mel_ctx.spec_ctx.time_bins);
-		f32* out = energy_to_db(mel_energies,
+		f64* out = energy_to_db(mel_energies,
 								mel_ctx.n_mels*mel_ctx.spec_ctx.time_bins);
 
 		free(complex_spectrogram);

@@ -1,6 +1,6 @@
 #include "bitmap.h"
 
-void writeBMPfromF32(const f32* input_data, u16 width, u16 height, const char* file_name) {
+void writeBMPfromF32(const f64* input_data, u16 width, u16 height, const char* file_name) {
 		FILE* output_file = fopen(file_name, "wb");
 		u16 padded_width = (width+3) & (~3); // round up to multiple of 4
 		
@@ -36,12 +36,12 @@ void writeBMPfromF32(const f32* input_data, u16 width, u16 height, const char* f
 		fwrite(spec, 256*4, 1, output_file);
 
 		// copying data to let input_data constant (to be able to reuse it in the code)
-		f32* data = (f32*)malloc(width*height*sizeof(f32));
-		memcpy(data, input_data, width*height*sizeof(f32));
+		f64* data = (f64*)malloc(width*height*sizeof(f64));
+		memcpy(data, input_data, width*height*sizeof(f64));
 
 		// determine min and max of the float array
-		f32 min = data[0];
-		f32 max = data[0];
+		f64 min = data[0];
+		f64 max = data[0];
 		for (u32 i=0; i<width*height; i++) {
 				min = MIN(min, data[i]);
 				max = MAX(max, data[i]);
@@ -51,13 +51,13 @@ void writeBMPfromF32(const f32* input_data, u16 width, u16 height, const char* f
 		for (u32 i=0; i<width*height; i++)
 				data[i] = (data[i] - min) / (max - min);
 
-		// multiply by 255.0f then quantize to u8
+		// multiply by 255.0 then quantize to u8
 		u8* out = (u8*)malloc(padded_width*height);
 		memset(out, 0, padded_width*height);
 		u32 ind = 0;
 		for (u32 i=0; i<height; i++) {
 				for (u32 j=0; j<width; j++)
-						out[ind++] = (u8)(data[j+i*width] * 255.0f);
+						out[ind++] = (u8)(data[j+i*width] * 255.);
 				ind += padded_width - width;
 		}
 

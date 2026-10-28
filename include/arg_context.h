@@ -29,9 +29,9 @@ typedef struct {
 		u16 time_bins;
 		u16 freq_bins;
 
-		f32 max_freq; // the frequency of the highest bin
+		f64 max_freq; // the frequency of the highest bin
 
-		f32* signal;
+		f64* signal;
 } spectrogram_context;
 
 typedef struct {

@@ -1,27 +1,27 @@
 #include "dft.h"
 
-void dft(const f32* signal, const f32* window, float complex* out, u32 n_fft, f32* scaled_by_window) {
+void dft(const f64* signal, const f64* window, c64* out, u32 n_fft, f64* scaled_by_window) {
 		// signal and window of size n_fft
 		// out of size n_fft/2 + 1
 		for (u32 i=0; i<n_fft; i++)
 				scaled_by_window[i] = signal[i] * window[i];
 
-		float complex expo, factor;
+		c64 expo, factor;
 		for (u32 i=0; i<n_fft/2 + 1; i++) {
-				expo = 1.0f;
-				factor = cexpf(-2.0f * I * PI * (f32)i / (f32)n_fft);
+				expo = 1.0;
+				factor = cexp(-2. * I * PI * (f64)i / (f64)n_fft);
 				for (u32 j=0; j<n_fft; j++) {
 						out[i] += expo * scaled_by_window[j];
 						expo *= factor;
 				}
 		}
 }
-float complex* spec_dft(spectrogram_context spec_ctx) {
-		f32* hann_window = build_hann_window(spec_ctx.n_fft);
-		f32* scaled_by_window = (f32*)malloc(spec_ctx.n_fft*sizeof(f32)); // allocating once the buffer for all DFTs
+c64* spec_dft(spectrogram_context spec_ctx) {
+		f64* hann_window = build_hann_window(spec_ctx.n_fft);
+		f64* scaled_by_window = (f64*)malloc(spec_ctx.n_fft*sizeof(f64)); // allocating once the buffer for all DFTs
 
-		float complex* complex_spectrogram = (float complex*)malloc(spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(float complex));
-		memset(complex_spectrogram, 0, spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(float complex));
+		c64* complex_spectrogram = (c64*)malloc(spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(c64));
+		memset(complex_spectrogram, 0, spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(c64));
 
 		// short time fourier transforms with sliding window
 		for (u32 t=0; t<spec_ctx.time_bins; t++)
@@ -37,7 +37,7 @@ float complex* spec_dft(spectrogram_context spec_ctx) {
 		return complex_spectrogram;
 }
 
-void radix2(const f32* scaled_signal, float complex* out_buffer, u32 N, u32 stride) {
+void radix2(const f64* scaled_signal, c64* out_buffer, u32 N, u32 stride) {
 		if (N == 1)
 				out_buffer[0] = scaled_signal[0];
 		else
@@ -46,25 +46,24 @@ void radix2(const f32* scaled_signal, float complex* out_buffer, u32 N, u32 stri
 				radix2(scaled_signal, out_buffer, half, 2*stride);
 				radix2(scaled_signal+stride, out_buffer+half, half, 2*stride);
 
-				float complex p, q;
 				for (u32 k=0; k<half; k++) {
-						p = out_buffer[k];
-						q = cexpf(-2.0f * PI * I * (f32)k / (f32)N) * out_buffer[k+half];
+						c64 p = out_buffer[k];
+						c64 q = cexp(-2. * PI * I * (f64)k / (f64)N) * out_buffer[k+half];
 						out_buffer[k] = p + q;
 						out_buffer[k+half] = p - q;
 				}
 		}
 }
-float complex* spec_radix2(spectrogram_context spec_ctx) {
-		f32* hann_window = build_hann_window(spec_ctx.n_fft);
-		f32* scaled_by_window = (f32*)malloc(spec_ctx.n_fft*sizeof(f32));
-		float complex* extended_buffer = (float complex*)malloc(spec_ctx.n_fft*sizeof(float complex));
+c64* spec_radix2(spectrogram_context spec_ctx) {
+		f64* hann_window = build_hann_window(spec_ctx.n_fft);
+		f64* scaled_by_window = (f64*)malloc(spec_ctx.n_fft*sizeof(f64));
+		c64* extended_buffer = (c64*)malloc(spec_ctx.n_fft*sizeof(c64));
 
-		float complex* complex_spectrogram = (float complex*)malloc(spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(float complex));
-		memset(complex_spectrogram, 0, spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(float complex));
+		c64* complex_spectrogram = (c64*)malloc(spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(c64));
+		memset(complex_spectrogram, 0, spec_ctx.time_bins * spec_ctx.freq_bins * sizeof(c64));
 
 		// fft computation
-		f32* signal;
+		f64* signal;
 		for (u32 t=0; t<spec_ctx.time_bins; t++) {
 				signal = spec_ctx.signal + spec_ctx.hop_length * t;
 				for (u32 i=0; i<spec_ctx.n_fft; i++)
@@ -72,7 +71,7 @@ float complex* spec_radix2(spectrogram_context spec_ctx) {
 
 				radix2(scaled_by_window, extended_buffer,
 				       spec_ctx.n_fft, 1);
-				memcpy(complex_spectrogram + (t*spec_ctx.freq_bins), extended_buffer, spec_ctx.freq_bins*sizeof(float complex));
+				memcpy(complex_spectrogram + (t*spec_ctx.freq_bins), extended_buffer, spec_ctx.freq_bins*sizeof(c64));
 		}
 
 
@@ -83,7 +82,10 @@ float complex* spec_radix2(spectrogram_context spec_ctx) {
 		return complex_spectrogram;
 }
 
-float complex* spec_bluestein(spectrogram_context spec_ctx) {
+void bluestein(const f64* signal, const f64* window, c64* out, u32 n_fft, f64* scaled_by_window, f64* extended_buffer) {
+
+}
+c64* spec_bluestein(spectrogram_context spec_ctx) {
 
 }
 

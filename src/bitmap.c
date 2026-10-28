@@ -1,6 +1,6 @@
 #include "bitmap.h"
 
-void writeBMPfromF32(const f64* input_data, u16 width, u16 height, const char* file_name) {
+void writeBMPfromF64(const f64* input_data, u16 width, u16 height, const char* file_name) {
 		FILE* output_file = fopen(file_name, "wb");
 		u16 padded_width = (width+3) & (~3); // round up to multiple of 4
 		

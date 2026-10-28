@@ -30,6 +30,6 @@ typedef struct {
 
 
 u8* spec_palette(); // written at the bottom for the bitmap.c
-void writeBMPfromF32(const f64* input_data, u16 width, u16 height, const char* file_name);
+void writeBMPfromF64(const f64* input_data, u16 width, u16 height, const char* file_name);
 
 #endif

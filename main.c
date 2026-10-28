@@ -11,12 +11,12 @@ int main(i32 argc, const char** argv) {
 		if (arguments.make_mel) {
 				mel_spectrogram_context mel_ctx = get_mel_spectrogram_context(wav, arguments);
 				spec = make_mel_spec(mel_ctx);
-				writeBMPfromF32(spec, mel_ctx.spec_ctx.time_bins, mel_ctx.n_mels, arguments.output_file_name);
+				writeBMPfromF64(spec, mel_ctx.spec_ctx.time_bins, mel_ctx.n_mels, arguments.output_file_name);
 		}
 		else {
 				spectrogram_context spec_ctx = get_spectrogram_context(wav, arguments);
 				spec = make_spectrogram(spec_ctx);
-				writeBMPfromF32(spec, spec_ctx.time_bins, spec_ctx.freq_bins, arguments.output_file_name);
+				writeBMPfromF64(spec, spec_ctx.time_bins, spec_ctx.freq_bins, arguments.output_file_name);
 		}
 
 

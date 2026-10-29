@@ -34,14 +34,14 @@ c64* spec_dft(spectrogram_context spec_ctx) {
 		return complex_spectrogram;
 }
 
-void radix2(const f64* scaled_signal, c64* out_buffer, u32 N, u32 stride, b32 forward) { // forward = 1 if forward dft, forward = 0 if reverse dft
+void radix2(const f64* scaled_signal, c64* out_buffer, u32 N, u32 stride, i32 forward) { // forward = 1 if forward dft, forward = 0 if reverse dft
 		if (N == 1)
 				out_buffer[0] = scaled_signal[0];
 		else
 		{
 				u32 half = N/2;
-				radix2(scaled_signal, out_buffer, half, 2*stride, 1);
-				radix2(scaled_signal+stride, out_buffer+half, half, 2*stride, 1);
+				radix2(scaled_signal, out_buffer, half, 2*stride, forward);
+				radix2(scaled_signal+stride, out_buffer+half, half, 2*stride, forward);
 
 				for (u32 k=0; k<half; k++) {
 						c64 p = out_buffer[k];
@@ -51,18 +51,18 @@ void radix2(const f64* scaled_signal, c64* out_buffer, u32 N, u32 stride, b32 fo
 				}
 		}
 }
-void radix2_c(const c64* scaled_signal, c64* out_buffer, u32 N, u32 stride, b32 forward) { // forward = 1 if forward dft, forward = 0 if reverse dft
+void radix2_c(const c64* scaled_signal, c64* out_buffer, u32 N, u32 stride, i32 forward) { // forward = 1 if forward dft, forward = 0 if reverse dft
 		if (N == 1)
 				out_buffer[0] = scaled_signal[0];
 		else
 		{
 				u32 half = N/2;
-				radix2_c(scaled_signal, out_buffer, half, 2*stride, 1);
-				radix2_c(scaled_signal+stride, out_buffer+half, half, 2*stride, 1);
+				radix2_c(scaled_signal, out_buffer, half, 2*stride, forward);
+				radix2_c(scaled_signal+stride, out_buffer+half, half, 2*stride, forward);
 
 				for (u32 k=0; k<half; k++) {
 						c64 p = out_buffer[k];
-						c64 q = cexp((forward * -1.) * 2. * PI * I * (f64)k / (f64)N) * out_buffer[k+half];
+						c64 q = cexp(((2*forward-1) * -1.) * 2. * PI * I * (f64)k / (f64)N) * out_buffer[k+half];
 						out_buffer[k] = p + q;
 						out_buffer[k+half] = p - q;
 				}
@@ -116,7 +116,7 @@ void bluestein(const f64* signal, c64* extended_out_buffer,
 				extended_a_fft_buffer[i] *= precomputed_b_fft[i] / (f64)M;
 		
 		// inverse fft into the out_buffer 
-		radix2_c(extended_a_fft_buffer, extended_out_buffer, M, 1, false);
+		radix2_c(extended_a_fft_buffer, extended_out_buffer, M, 1, 0);
 
 		for (u32 i=0; i<n_fft; i++) // don't care about i when n_fft <= i < M
 				extended_out_buffer[i] *= precomputed_b_star[i];

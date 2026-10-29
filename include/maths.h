@@ -9,6 +9,8 @@
 
 #define PI 3.14159265358979323846
 
+u32 next_pow2(u32 N);
+
 f64* complex_to_energy(const c64* input, u32 N);
 f64* energy_to_db(const f64* input, u32 N);
 f64* complex_to_db(const c64* input, u32 N); // takes the complex array, takes their square magniture (power), then computes 10*log_base10

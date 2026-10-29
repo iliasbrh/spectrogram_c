@@ -1,5 +1,14 @@
 #include "maths.h"
 
+u32 next_pow2(u32 N) {
+		N--;
+		N |= N >> 1;
+		N |= N >> 2;
+		N |= N >> 4;
+		N |= N >> 8;
+		N |= N >> 16;
+		return N+1;
+}
 
 f64* complex_to_db(const c64* input, u32 N) { // takes the complex array, then computes their square magniture (power), then computes 10*log_base10
 		f64* out = (f64*)malloc(N*sizeof(f64));

@@ -1,7 +1,7 @@
 #include "spectrogram.h"
 
 c64* make_complex_spectrogram(spectrogram_context spec_ctx) {
-		c64* complex_spectrogram = spec_radix2(spec_ctx);
+		c64* complex_spectrogram = spec_bluestein(spec_ctx);
 
 		return complex_spectrogram;
 }

@@ -1,7 +1,11 @@
 #include "spectrogram.h"
 
 c64* make_complex_spectrogram(spectrogram_context spec_ctx) {
-		c64* complex_spectrogram = spec_bluestein(spec_ctx);
+		c64* complex_spectrogram;
+		if (spec_ctx.n_fft == next_pow2(spec_ctx.n_fft)) // if n_fft is a power of 2
+				complex_spectrogram = spec_radix2(spec_ctx);
+		else
+				complex_spectrogram = spec_bluestein(spec_ctx);
 
 		return complex_spectrogram;
 }

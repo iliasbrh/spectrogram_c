@@ -4,10 +4,10 @@ Computing spectrograms from .wav audio files into .bmp format.
 
 The project does the following tasks :  
 - parses .wav files to extract audio signals as float arrays  
-- computes Short Time Fourier Tranforms with a Hann window applied and regular hops  
+- computes Short Time Fourier Tranforms with a Hann window applied and regular hops. The STFT is computed either with Cooley-Tukey or Bluestein, chosen dynamically depending on the n_fft parameter
 - writes a Bitmap file (.bmp, uncompressed) for the resulting image  
 
-## To run it on your own
+## Installation
 
 Add a .wav file in the main directory, then run `make build` and `./spectrogram file.wav`. The info header of the wav file will be printed and the .bmp resulting file will appear.
 
